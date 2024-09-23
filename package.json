@@ -24,7 +24,8 @@
     "@fluentui/react-components": "^9.54.7",
     "blockly": "^11.1.1",
     "electron-updater": "^6.1.7",
-    "i18next": "^23.12.2"
+    "i18next": "^23.15.1",
+    "react-i18next": "^15.0.2"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",

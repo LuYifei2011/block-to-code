@@ -1,6 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
+import './react-i18next/i18n'
+import { t } from 'i18next'
+
 import {
   FluentProvider,
   webLightTheme,
@@ -44,17 +47,31 @@ const App = () => {
   }
 
   return (
-    <FluentProvider theme={webDarkTheme} style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}>
+    <FluentProvider
+      theme={webDarkTheme}
+      style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}
+    >
       <div style={{ margin: '50px' }}>
-        <Title1>新建文件</Title1>
+        <Title1>{t('newFile')}</Title1>
         <br />
         <div style={{ margin: '20px' }}>
-          <Label htmlFor={filePath}>文件路径</Label>
+          <Label htmlFor={filePath}>{t('filePath')}</Label>
           <br />
-          <Input id={filePath} style={{ width: '100%' }} contentAfter={<Button onClick={chooseFile} appearance="transparent" size='small' icon={<OpenFolder24Regular />} />} />
+          <Input
+            id={filePath}
+            style={{ width: '100%' }}
+            contentAfter={
+              <Button
+                onClick={chooseFile}
+                appearance="transparent"
+                size="small"
+                icon={<OpenFolder24Regular />}
+              />
+            }
+          />
           <br />
           <br />
-          <Label htmlFor={fileLanguage}>文件类型</Label>
+          <Label htmlFor={fileLanguage}>{t('fileLanguage')}</Label>
           <Select id={fileLanguage}>
             <option value="python">Python</option>
             <option value="javascript">JavaScript</option>
@@ -62,10 +79,12 @@ const App = () => {
         </div>
         <div>
           <div style={{ bottom: 0, right: 0, position: 'absolute', margin: '50px' }}>
-            <Button appearance="primary" onClick={createFile}>创建</Button>
+            <Button appearance="primary" onClick={createFile}>
+              {t('create')}
+            </Button>
           </div>
           <div style={{ bottom: 0, left: 0, position: 'absolute', margin: '50px' }}>
-            <Button onClick={cancle}>取消</Button>
+            <Button onClick={cancle}>{t('cancel')}</Button>
           </div>
         </div>
       </div>

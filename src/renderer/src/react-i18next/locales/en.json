@@ -1,0 +1,23 @@
+{
+	"newFile": "New File",
+	"openFile": "Open File",
+    "filePath": "File Path",
+    "fileLanguage": "File Language",
+    "create": "Create",
+    "cancel": "Cancel",
+    "file": "File",
+    "new": "New",
+    "open": "Open",
+    "save": "Save",
+    "saveAs": "Save As",
+    "edit": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "build": "Build",
+    "run": "Run",
+    "help": "Help",
+    "add": "Add",
+    "save_success": "Save Success",
+    "build_success": "Build Success",
+    "add_extension": "Add Extension"
+}

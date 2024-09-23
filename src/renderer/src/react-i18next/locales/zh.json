@@ -1,0 +1,23 @@
+{
+	"newFile": "新建文件",
+	"openFile": "打开文件",
+    "filePath": "文件路径",
+    "fileLanguage": "文件语言",
+    "create": "创建",
+    "cancel": "取消",
+    "file": "文件",
+    "new": "新建",
+    "open": "打开",
+    "save": "保存",
+    "saveAs": "另存为",
+    "edit": "编辑",
+    "undo": "撤销",
+    "redo": "重做",
+    "build": "生成",
+    "run": "运行",
+    "help": "帮助",
+    "add": "添加",
+    "save_success": "保存成功",
+    "build_success": "生成成功",
+    "add_extension": "添加扩展"
+}

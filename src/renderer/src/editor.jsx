@@ -9,6 +9,9 @@ import { getToolbox } from './toolbox.js'
 
 import './assets/style/editor.css'
 
+import './react-i18next/i18n'
+import { t } from 'i18next'
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
@@ -119,7 +122,7 @@ const App = () => {
       window.api.writeFile(filePath, json)
       dispatchToast(
         <Toast>
-          <ToastTitle>保存成功</ToastTitle>
+          <ToastTitle>{t('save_success')}</ToastTitle>
         </Toast>,
         { intent: 'success' }
       )
@@ -156,7 +159,7 @@ const App = () => {
       )
       dispatchToast(
         <Toast>
-          <ToastTitle>生成成功</ToastTitle>
+          <ToastTitle>{t('build_success')}</ToastTitle>
         </Toast>,
         { intent: 'success' }
       )
@@ -178,7 +181,7 @@ const App = () => {
       extensions.push(document.getElementById(filePath).value)
       dispatchToast(
         <Toast>
-          <ToastTitle>添加成功</ToastTitle>
+          <ToastTitle>{t('add_success')}</ToastTitle>
         </Toast>,
         { intent: 'success' }
       )
@@ -186,20 +189,33 @@ const App = () => {
     return (
       <Dialog>
         <DialogTrigger disableButtonEnhancement>
-          <Button>添加扩展</Button>
+          <Button>{t('add_extension')}</Button>
         </DialogTrigger>
         <DialogSurface>
           <DialogBody>
-            <DialogTitle>添加扩展</DialogTitle>
+            <DialogTitle>{t('add_extension')}</DialogTitle>
             <DialogContent>
-            <Input id={filePath} style={{ width: '100%' }} contentAfter={<Button onClick={chooseFile} appearance="transparent" size='small' icon={<OpenFolder24Regular />} />} />
+              <Input
+                id={filePath}
+                style={{ width: '100%' }}
+                contentAfter={
+                  <Button
+                    onClick={chooseFile}
+                    appearance="transparent"
+                    size="small"
+                    icon={<OpenFolder24Regular />}
+                  />
+                }
+              />
             </DialogContent>
             <DialogActions>
               <DialogTrigger disableButtonEnhancement>
-                <Button appearance="secondary">关闭</Button>
+                <Button appearance="secondary">{t('cancel')}</Button>
               </DialogTrigger>
               <DialogTrigger disableButtonEnhancement>
-                <Button appearance="primary" onClick={addExtension}>添加</Button>
+                <Button appearance="primary" onClick={addExtension}>
+                  {t('add')}
+                </Button>
               </DialogTrigger>
             </DialogActions>
           </DialogBody>
@@ -220,29 +236,29 @@ const App = () => {
       <div>
         <Menu>
           <MenuTrigger disableButtonEnhancement>
-            <Button>文件</Button>
+            <Button>{t('file')}</Button>
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem onClick={newFile}>新建</MenuItem>
-              <MenuItem onClick={open}>打开</MenuItem>
-              <MenuItem onClick={save}>保存</MenuItem>
+              <MenuItem onClick={newFile}>{t('new')}</MenuItem>
+              <MenuItem onClick={open}>{t('open')}</MenuItem>
+              <MenuItem onClick={save}>{t('save')}</MenuItem>
             </MenuList>
           </MenuPopover>
         </Menu>
         <Menu>
           <MenuTrigger disableButtonEnhancement>
-            <Button>编辑</Button>
+            <Button>{t('edit')}</Button>
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem onClick={undo}>撤销</MenuItem>
-              <MenuItem onClick={redo}>重做</MenuItem>
+              <MenuItem onClick={undo}>{t('undo')}</MenuItem>
+              <MenuItem onClick={redo}>{t('redo')}</MenuItem>
             </MenuList>
           </MenuPopover>
         </Menu>
-        <Button onClick={buildCode}>生成</Button>
-        <Button>运行</Button>
+        <Button onClick={buildCode}>{t('build')}</Button>
+        <Button>{t('run')}</Button>
         <AddExtensions />
       </div>
       <main>
