@@ -37,7 +37,8 @@ import {
   DialogBody,
   DialogActions,
   DialogContent,
-  Input
+  Input,
+  useRestoreFocusTarget
 } from '@fluentui/react-components'
 import { OpenFolder24Regular } from '@fluentui/react-icons'
 
@@ -129,7 +130,7 @@ const App = () => {
     }
   }
 
-  function open() {
+  function openFile() {
     window.api.openFileDialog().then((path) => {
       if (path) {
         window.location.href = 'editor.html?file=' + path
@@ -164,6 +165,14 @@ const App = () => {
         { intent: 'success' }
       )
     }
+  }
+
+  function clearTrash() {
+    Blockly.getMainWorkspace().trashcan.emptyContents()
+  }
+
+  function openAbout() {
+    window.api.newWindow('../renderer/about.html', 600, 400)
   }
 
   const AddExtensions = () => {
@@ -224,6 +233,9 @@ const App = () => {
     )
   }
 
+  const [open, setOpen] = React.useState(false)
+  const restoreFocusTargetAttribute = useRestoreFocusTarget()
+
   return (
     <FluentProvider theme={webDarkTheme}>
       <Toaster
@@ -241,7 +253,7 @@ const App = () => {
           <MenuPopover>
             <MenuList>
               <MenuItem onClick={newFile}>{t('new')}</MenuItem>
-              <MenuItem onClick={open}>{t('open')}</MenuItem>
+              <MenuItem onClick={openFile}>{t('open')}</MenuItem>
               <MenuItem onClick={save}>{t('save')}</MenuItem>
             </MenuList>
           </MenuPopover>
@@ -254,13 +266,57 @@ const App = () => {
             <MenuList>
               <MenuItem onClick={undo}>{t('undo')}</MenuItem>
               <MenuItem onClick={redo}>{t('redo')}</MenuItem>
+              <MenuItem
+                {...restoreFocusTargetAttribute}
+                onClick={() => {
+                  setOpen(true)
+                }}
+              >
+                {t('clear_trash')}
+              </MenuItem>
             </MenuList>
           </MenuPopover>
         </Menu>
         <Button onClick={buildCode}>{t('build')}</Button>
         <Button>{t('run')}</Button>
         <AddExtensions />
+        <Menu>
+          <MenuTrigger disableButtonEnhancement>
+            <Button>{t('help')}</Button>
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              <MenuItem onClick={openAbout}>{t('about')}</MenuItem>
+            </MenuList>
+          </MenuPopover>
+        </Menu>
       </div>
+      <Dialog
+        open={open}
+        onOpenChange={(event, data) => {
+          // it is the users responsibility to react accordingly to the open state change
+          setOpen(data.open)
+        }}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>{t('clear_trash')}</DialogTitle>
+            <DialogContent>
+              <p>{t('clear_trash_confirm')}</p>
+            </DialogContent>
+            <DialogActions>
+              <DialogTrigger disableButtonEnhancement>
+                <Button appearance="secondary">{t('cancel')}</Button>
+              </DialogTrigger>
+              <DialogTrigger disableButtonEnhancement>
+                <Button appearance="primary" onClick={clearTrash}>
+                  {t('clear')}
+                </Button>
+              </DialogTrigger>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
       <main>
         <div id="blocklyArea"></div>
         <div id="blocklyDiv"></div>

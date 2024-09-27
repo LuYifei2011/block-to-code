@@ -4,11 +4,11 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 
-function createWindow() {
+function createWindow(filePath, width = 900, height = 670) {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+  const newWindow = new BrowserWindow({
+    width: width,
+    height: height,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -19,11 +19,11 @@ function createWindow() {
     }
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+  newWindow.on('ready-to-show', () => {
+    newWindow.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
+  newWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
@@ -31,9 +31,9 @@ function createWindow() {
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    newWindow.loadURL(process.env['ELECTRON_RENDERER_URL'] + filePath.replace('../renderer', ''))
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    newWindow.loadFile(join(__dirname, filePath))
   }
 }
 
@@ -49,6 +49,10 @@ app.whenReady().then(() => {
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
+  })
+
+  ipcMain.on('newWindow', (event, filePath, width, height) => {
+    createWindow(filePath, width, height)
   })
 
   ipcMain.handle('openFileDialog', async () => {
@@ -78,12 +82,12 @@ app.whenReady().then(() => {
     return true
   })
 
-  createWindow()
+  createWindow('../renderer/index.html', 900, 670)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) createWindow('../renderer/index.html', 900, 670)
   })
 })
 

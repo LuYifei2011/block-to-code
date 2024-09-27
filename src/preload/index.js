@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
+  newWindow: (filePath, width, height) => ipcRenderer.send('newWindow', filePath, width, height),
   openFileDialog: () => ipcRenderer.invoke('openFileDialog'),
   saveFileDialog: () => ipcRenderer.invoke('saveFileDialog'),
   readFile: (filePath) => ipcRenderer.sendSync('readFile', filePath),

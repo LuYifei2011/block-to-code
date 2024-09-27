@@ -48,7 +48,7 @@ const App = () => {
 ReactDOM.createRoot(document.getElementById('root')).render(<App />)
 
 function newFile() {
-  window.location.href = './new.html'
+  window.location.href = 'new.html'
 }
 
 function openFile() {

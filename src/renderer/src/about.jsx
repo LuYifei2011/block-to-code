@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 
 function Versions() {
   const [versions] = useState(window.electron.process.versions)
@@ -12,4 +14,4 @@ function Versions() {
   )
 }
 
-export default Versions
+ReactDOM.createRoot(document.getElementById('root')).render(<Versions />)
