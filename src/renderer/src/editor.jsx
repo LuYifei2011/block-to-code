@@ -12,7 +12,7 @@ import './assets/style/editor.css'
 import './react-i18next/i18n'
 import { t } from 'i18next'
 
-import React from 'react'
+import React, { useTransition } from 'react'
 import ReactDOM from 'react-dom/client'
 
 import {
@@ -38,13 +38,16 @@ import {
   DialogActions,
   DialogContent,
   Input,
-  useRestoreFocusTarget
+  useRestoreFocusTarget,
+  ProgressBar
 } from '@fluentui/react-components'
 import { OpenFolder24Regular } from '@fluentui/react-icons'
 
 const App = () => {
   const toasterId = useId('toaster')
   const { dispatchToast } = useToastController(toasterId)
+  const [isPending, startTransition] = useTransition()
+  var loadingRoot
 
   const paramsStr = window.location.search
   const params = new URLSearchParams(paramsStr)
@@ -56,61 +59,106 @@ const App = () => {
   var toolbox = getToolbox()
 
   React.useEffect(() => {
-    var blocklyArea = document.getElementById('blocklyArea')
-    var blocklyDiv = document.getElementById('blocklyDiv')
-    workspace = Blockly.inject(blocklyDiv, {
-      toolbox: toolbox,
-      zoom: {
-        controls: true,
-        wheel: true,
-        startScale: 1.0,
-        maxScale: 3,
-        minScale: 0.3,
-        scaleSpeed: 1.2
-      },
-      trashcan: true,
-      theme: DarkTheme
-    })
-    var onresize = function (e) {
-      var element = blocklyArea
-      var x = 0
-      var y = 0
-      do {
-        x += element.offsetLeft
-        y += element.offsetTop
-        element = element.offsetParent
-      } while (element)
-      blocklyDiv.style.left = x + 'px'
-      blocklyDiv.style.top = y - 32 + 'px'
-      blocklyDiv.style.width = blocklyArea.offsetWidth + 'px'
-      blocklyDiv.style.height = blocklyArea.offsetHeight - 32 + 'px'
-      Blockly.svgResize(workspace)
+    const initializeBlockly = async () => {
+      loadingRoot = ReactDOM.createRoot(document.getElementById('loading'))
+      showLoading()
+
+      var blocklyArea = document.getElementById('blocklyArea')
+      var blocklyDiv = document.getElementById('blocklyDiv')
+
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      workspace = Blockly.inject(blocklyDiv, {
+        toolbox: toolbox,
+        zoom: {
+          controls: true,
+          wheel: true,
+          startScale: 1.0,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2
+        },
+        trashcan: true,
+        theme: DarkTheme
+      })
+      workspace.addChangeListener(function (event) {
+        if (event.type == Blockly.Events.FINISHED_LOADING) {
+          hideLoading()
+        }
+      })
+      var onresize = function (e) {
+        var element = blocklyArea
+        var x = 0
+        var y = 0
+        do {
+          x += element.offsetLeft
+          y += element.offsetTop
+          element = element.offsetParent
+        } while (element)
+        blocklyDiv.style.left = x + 'px'
+        blocklyDiv.style.top = y - 32 + 'px'
+        blocklyDiv.style.width = blocklyArea.offsetWidth + 'px'
+        blocklyDiv.style.height = blocklyArea.offsetHeight - 32 + 'px'
+        Blockly.svgResize(workspace)
+      }
+      window.addEventListener('resize', onresize, false)
+      Blockly.setLocale(Ch)
+
+      onresize()
+
+      var project = JSON.parse(window.api.readFile(filePath))
+      extensions = project.extensions
+      codeLanguage = project.codeLanguage
+      extensions.forEach((element) => {
+        eval(window.api.readFile(element))
+      })
+
+      workspace.updateToolbox(toolbox)
+      startTransition(() => {
+        Blockly.serialization.workspaces.load(project.workspace, workspace)
+      })
     }
-    window.addEventListener('resize', onresize, false)
-    Blockly.setLocale(Ch)
 
-    onresize()
-
-    var project = JSON.parse(window.api.readFile(filePath))
-    extensions = project.extensions
-    codeLanguage = project.codeLanguage
-    extensions.forEach((element) => {
-      eval(window.api.readFile(element))
-    })
-    workspace.updateToolbox(toolbox)
-    Blockly.serialization.workspaces.load(project.workspace, workspace)
+    initializeBlockly()
 
     return () => {
       window.removeEventListener('resize', onresize, false)
     }
   }, [])
 
+  function showLoading() {
+    loadingRoot.render(
+      <div style={{ width: '100%', height: '100%', background: 'red' }}>
+        <div
+          style={{
+            margin: '0',
+            width: '50%',
+            top: '50%',
+            left: '50%',
+            position: 'absolute',
+            transform: 'translate(-50%, -50%)',
+            textAlign: 'center'
+          }}
+        >
+          <h1>{t('loading')}</h1>
+          <ProgressBar />
+        </div>
+      </div>
+    )
+    document.getElementById('loading').hidden = false
+  }
+
+  function hideLoading() {
+    loadingRoot.render(null)
+    document.getElementById('loading').hidden = true
+  }
+
   function undo() {
-    workspace.undo(false)
+    Blockly.getMainWorkspace().undo(false)
   }
 
   function redo() {
-    workspace.undo(true)
+    Blockly.getMainWorkspace().undo(true)
   }
 
   function save() {
@@ -245,6 +293,18 @@ const App = () => {
         pauseOnWindowBlur
         timeout={1000}
       />
+      <div
+        id="loading"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 9999
+        }}
+        hidden
+      ></div>
       <div>
         <Menu>
           <MenuTrigger disableButtonEnhancement>

@@ -7,7 +7,9 @@ const api = {
   openFileDialog: () => ipcRenderer.invoke('openFileDialog'),
   saveFileDialog: () => ipcRenderer.invoke('saveFileDialog'),
   readFile: (filePath) => ipcRenderer.sendSync('readFile', filePath),
-  writeFile: (filePath, data) => ipcRenderer.invoke('writeFile', filePath, data)
+  writeFile: (filePath, data) => ipcRenderer.invoke('writeFile', filePath, data),
+  setStore: (key, value) => ipcRenderer.send('setStore', key, value),
+  getStore: (key) => ipcRenderer.sendSync('getStore', key)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -3,6 +3,9 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
+import Store from 'electron-store'
+
+const store = new Store()
 
 function createWindow(filePath, width = 900, height = 670) {
   // Create the browser window.
@@ -51,7 +54,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.on('newWindow', (event, filePath, width, height) => {
+  ipcMain.on('newWindow', (_, filePath, width, height) => {
     createWindow(filePath, width, height)
   })
 
@@ -80,6 +83,15 @@ app.whenReady().then(() => {
   ipcMain.handle('writeFile', async (event, path, data) => {
     fs.writeFileSync(path, data)
     return true
+  })
+
+  ipcMain.on('setStore', (_, key, value) => {
+    store.set(key, value)
+  })
+
+  ipcMain.on('getStore', (_, key) => {
+    let value = store.get(key)
+    _.returnValue = value || ''
   })
 
   createWindow('../renderer/index.html', 900, 670)
