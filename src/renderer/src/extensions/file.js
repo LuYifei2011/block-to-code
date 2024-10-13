@@ -1,4 +1,5 @@
-Blockly.Msg.EXT_FILE_HUE = '42'
+Blockly.Msg.EXT_FILES_HUE = '42'
+Blockly.Msg.EXT_FILES = '文件'
 Blockly.defineBlocksWithJsonArray([
   {
     type: 'files_open',
@@ -13,7 +14,7 @@ Blockly.defineBlocksWithJsonArray([
       }
     ],
     output: 'file',
-    colour: '%{BKY_EXT_FILE_HUE}',
+    colour: '%{BKY_EXT_FILES_HUE}',
     inputsInline: true,
     mutator: 'files_open_mutator'
   },
@@ -88,7 +89,40 @@ Blockly.defineBlocksWithJsonArray([
         name: 'opener'
       }
     ],
-    colour: 225
+    colour: '%{BKY_EXT_FILES_HUE}'
+  },
+  {
+    type: 'files_open_mode',
+    tooltip: '',
+    helpUrl: '',
+    message0: '%1 ，读写 %2 ，二进制 %3 %4',
+    args0: [
+      {
+        type: 'field_dropdown',
+        name: 'mode',
+        options: [
+          ['读', 'r'],
+          ['写', 'w'],
+          ['追加', 'a']
+        ]
+      },
+      {
+        type: 'field_checkbox',
+        name: 'p',
+        checked: 'FALSE'
+      },
+      {
+        type: 'field_checkbox',
+        name: 'b',
+        checked: 'FALSE'
+      },
+      {
+        type: 'input_dummy',
+        name: 'mode'
+      }
+    ],
+    output: 'String',
+    colour: '%{BKY_EXT_FILES_HUE}'
   }
 ])
 
@@ -146,9 +180,13 @@ Blockly.Extensions.registerMutator(
     updateShape_: function () {
       if (this.mode_ == 'TRUE') {
         if (!this.getInput('mode')) {
-          var shadowBlock = document.createElement('block')
-          shadowBlock.setAttribute('type', 'text')
-          this.appendValueInput('mode').setCheck('String').appendField('模式').setShadowDom(shadowBlock)
+          var shadowBlock = Blockly.utils.xml.textToDom(
+            '<xml><shadow type="files_open_mode"/></xml>'
+          ).children[0]
+          this.appendValueInput('mode')
+            .setCheck('String')
+            .appendField('模式')
+            .setShadowDom(shadowBlock)
         }
       } else {
         if (this.getInput('mode')) {
@@ -163,14 +201,52 @@ Blockly.Extensions.registerMutator(
 
 pythonGenerator.forBlock['files_open'] = function (block, generator) {
   const value_file = generator.valueToCode(block, 'file', Order.ATOMIC)
-  const code = `open(${value_file})`
+  let mode
+  let buffering
+  let encoding
+  let errors
+  let newline
+  let closefd
+  let opener
+  try {
+    mode = generator.valueToCode(block, 'mode', Order.ATOMIC)
+  } catch (e) {}
+  try {
+    buffering = generator.valueToCode(block, 'buffering', Order.ATOMIC)
+  } catch (e) {}
+  try {
+    encoding = generator.valueToCode(block, 'encoding', Order.ATOMIC)
+  } catch (e) {}
+  try {
+    errors = generator.valueToCode(block, 'errors', Order.ATOMIC)
+  } catch (e) {}
+  try {
+    newline = generator.valueToCode(block, 'newline', Order.ATOMIC)
+  } catch (e) {}
+  try {
+    closefd = generator.valueToCode(block, 'closefd', Order.ATOMIC)
+  } catch (e) {}
+  try {
+    opener = generator.valueToCode(block, 'opener', Order.ATOMIC)
+  } catch (e) {}
+
+  const code = `open(${value_file + (mode ? ', ' + mode : '')})`
   return [code, Order.NONE]
+}
+
+pythonGenerator.forBlock['files_open_mode'] = function (block) {
+  const dropdown_mode = block.getFieldValue('mode')
+  const checkbox_p = block.getFieldValue('p')
+  const checkbox_b = block.getFieldValue('b')
+
+  const code = `'${dropdown_mode + (checkbox_b == 'TRUE' ? 'b' : '') + (checkbox_p == 'TRUE' ? '+' : '')}'`
+  return [code, Order.ATOMIC]
 }
 
 toolbox.contents.push({
   kind: 'category',
-  name: 'Files',
-  colour: '%{BKY_EXT_FILE_HUE}',
+  name: '%{BKY_EXT_FILES}',
+  colour: '%{BKY_EXT_FILES_HUE}',
   contents: [
     {
       kind: 'block',
@@ -184,14 +260,6 @@ toolbox.contents.push({
             }
           }
         }
-        // mode: {
-        //   shadow:{
-        //     type: 'text',
-        //     fields: {
-        //       TEXT: 'r'
-        //     }
-        //   }
-        // }
       }
     }
   ]

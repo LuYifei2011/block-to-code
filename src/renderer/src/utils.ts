@@ -47,3 +47,9 @@ function getDirectory(filePath: string): string {
   // 提取目录部分
   return filePath.substring(0, lastSeparatorIndex)
 }
+
+export {
+  getFileNameWithoutExtension,
+  getFileName,
+  getDirectory,
+}

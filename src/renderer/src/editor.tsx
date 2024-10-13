@@ -1,14 +1,14 @@
 import DarkTheme from '@blockly/theme-dark'
 import 'blockly/blocks'
 import * as Blockly from 'blockly/core'
-import { javascriptGenerator, Order } from 'blockly/javascript'
+import { JavascriptGenerator, javascriptGenerator, Order } from 'blockly/javascript'
 import { pythonGenerator } from 'blockly/python'
 import * as Ch from 'blockly/msg/zh-hans'
 //import * as En from 'blockly/msg/en'
 import { getToolbox } from './toolbox.js'
 
 import './assets/style/editor.css'
-import './utils'
+import * as utils from './utils'
 
 import './react-i18next/i18n'
 import { t } from 'i18next'
@@ -42,6 +42,7 @@ import {
   useRestoreFocusTarget
 } from '@fluentui/react-components'
 import { OpenFolder24Regular } from '@fluentui/react-icons'
+import { Console } from 'console'
 
 const App: React.FC = () => {
   const toasterId = useId('toaster')
@@ -97,7 +98,7 @@ const App: React.FC = () => {
     extensions = project.extensions
     codeLanguage = project.codeLanguage
     extensions.forEach((element) => {
-      eval(window.api.readFile(element))
+      Function('Blockly', 'workspace', 'pythonGenerator', 'toolbox', 'Order', window.api.readFile(element))(Blockly, workspace, pythonGenerator, toolbox, Order)
     })
 
     workspace.updateToolbox(toolbox)
@@ -155,9 +156,9 @@ const App: React.FC = () => {
         code = '#!/usr/bin/env python3\n\n' + code
       }
       window.api.writeFile(
-        getDirectory(filePath) +
+        utils.getDirectory(filePath) +
           '/' +
-          getFileNameWithoutExtension(filePath) +
+          utils.getFileNameWithoutExtension(filePath) +
           (codeLanguage === 'javascript' ? '.js' : codeLanguage === 'python' ? '.py' : ''),
         code
       )
