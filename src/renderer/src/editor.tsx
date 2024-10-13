@@ -1,7 +1,7 @@
 import DarkTheme from '@blockly/theme-dark'
 import 'blockly/blocks'
 import * as Blockly from 'blockly/core'
-import { JavascriptGenerator, javascriptGenerator, Order } from 'blockly/javascript'
+import { javascriptGenerator, Order } from 'blockly/javascript'
 import { pythonGenerator } from 'blockly/python'
 import * as Ch from 'blockly/msg/zh-hans'
 //import * as En from 'blockly/msg/en'
