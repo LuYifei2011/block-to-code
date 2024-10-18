@@ -4,7 +4,7 @@ export function getToolbox() {
     contents: [
       {
         kind: 'category',
-        name: 'Logic',
+        name: '%{BKY_CATLOGIC}',
         contents: [
           {
             kind: 'block',
@@ -39,7 +39,7 @@ export function getToolbox() {
       },
       {
         kind: 'category',
-        name: 'Loops',
+        name: '%{BKY_CATLOOPS}',
         contents: [
           {
             kind: 'block',
@@ -102,7 +102,7 @@ export function getToolbox() {
       },
       {
         kind: 'category',
-        name: 'Math',
+        name: '%{BKY_CATMATH}',
         contents: [
           {
             kind: 'block',
@@ -302,7 +302,7 @@ export function getToolbox() {
       },
       {
         kind: 'category',
-        name: 'Text',
+        name: '%{BKY_CATTEXT}',
         contents: [
           {
             kind: 'block',
@@ -462,7 +462,7 @@ export function getToolbox() {
       },
       {
         kind: 'category',
-        name: 'Lists',
+        name: '%{BKY_CATLISTS}',
         contents: [
           {
             kind: 'block',
@@ -654,14 +654,14 @@ export function getToolbox() {
       },
       {
         kind: 'category',
-        name: 'Variables',
+        name: '%{BKY_CATVARIABLES}',
         contents: [],
         custom: 'VARIABLE',
         categorystyle: 'variable_category'
       },
       {
         kind: 'category',
-        name: 'Functions',
+        name: '%{BKY_CATFUNCTIONS}',
         contents: [],
         custom: 'PROCEDURE',
         categorystyle: 'procedure_category'
