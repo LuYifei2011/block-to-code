@@ -1,14 +1,7 @@
-import DarkTheme from '@blockly/theme-dark'
-import 'blockly/blocks'
-import * as Blockly from 'blockly/core'
-import { javascriptGenerator, Order } from 'blockly/javascript'
-import { pythonGenerator } from 'blockly/python'
-import * as Ch from 'blockly/msg/zh-hans'
-//import * as En from 'blockly/msg/en'
-import { getToolbox } from './toolbox.js'
-
 import './assets/style/editor.css'
 import * as utils from './utils'
+
+import { Workspaces } from './modules/workspaces'
 
 import './react-i18next/i18n'
 import { t } from 'i18next'
@@ -42,7 +35,6 @@ import {
   useRestoreFocusTarget
 } from '@fluentui/react-components'
 import { OpenFolder24Regular } from '@fluentui/react-icons'
-import { Console } from 'console'
 
 const App: React.FC = () => {
   const toasterId = useId('toaster')
@@ -52,78 +44,35 @@ const App: React.FC = () => {
   const params = new URLSearchParams(paramsStr)
   var filePath: string = params.get('file') || ''
 
-  var workspace: Blockly.WorkspaceSvg
-  var codeLanguage: string
-  var extensions: string[] = []
-  var toolbox = getToolbox()
+  var workspaces: Workspaces
 
   React.useEffect(() => {
-    var blocklyArea = document.getElementById('blocklyArea')
-    var blocklyDiv = document.getElementById('blocklyDiv')
-
-    workspace = Blockly.inject(blocklyDiv, {
-      toolbox: toolbox,
-      zoom: {
-        controls: true,
-        wheel: true,
-        startScale: 1.0,
-        maxScale: 3,
-        minScale: 0.3,
-        scaleSpeed: 1.2
-      },
-      trashcan: true,
-      theme: DarkTheme
-    })
-    var onresize = function () {
-      var element = blocklyArea
-      var x = 0
-      var y = 0
-      do {
-        x += element.offsetLeft
-        y += element.offsetTop
-        element = element.offsetParent
-      } while (element)
-      blocklyDiv.style.left = x + 'px'
-      blocklyDiv.style.top = y - 32 + 'px'
-      blocklyDiv.style.width = blocklyArea.offsetWidth + 'px'
-      blocklyDiv.style.height = blocklyArea.offsetHeight - 32 + 'px'
-      Blockly.svgResize(workspace)
-    }
-    window.addEventListener('resize', onresize, false)
-    Blockly.setLocale(Ch)
-
-    onresize()
-
+    workspaces = new Workspaces(document.getElementById('main') as HTMLDivElement)
     var project = JSON.parse(window.api.readFile(filePath))
-    extensions = project.extensions
-    codeLanguage = project.codeLanguage
-    extensions.forEach((element) => {
-      Function('Blockly', 'workspace', 'pythonGenerator', 'toolbox', 'Order', window.api.readFile(element))(Blockly, workspace, pythonGenerator, toolbox, Order)
-    })
-
-    workspace.updateToolbox(toolbox)
-    Blockly.serialization.workspaces.load(project.workspace, workspace)
-
-    return () => {
-      window.removeEventListener('resize', onresize, false);
-    };
+    workspaces.load(project)
   }, []);
 
   function undo() {
-    Blockly.getMainWorkspace().undo(false)
+    const activeWorkspace = workspaces.getActiveWorkspace();
+    if (activeWorkspace) {
+      activeWorkspace.undo(false);
+    } else {
+      console.warn('当前没有激活的工作区');
+    }
   }
 
   function redo() {
-    Blockly.getMainWorkspace().undo(true)
+    const activeWorkspace = workspaces.getActiveWorkspace();
+    if (activeWorkspace) {
+      activeWorkspace.undo(true);
+    } else {
+      console.warn('当前没有激活的工作区');
+    }
   }
 
   function save() {
     if (filePath) {
-      var json = JSON.stringify({
-        workspace: Blockly.serialization.workspaces.save(workspace),
-        codeLanguage: codeLanguage,
-        extensions: extensions
-      })
+      var json = JSON.stringify(workspaces.save())
       window.api.writeFile(filePath, json)
       dispatchToast(
         <Toast>
@@ -148,18 +97,12 @@ const App: React.FC = () => {
 
   function buildCode() {
     if (filePath) {
-      var code = ''
-      if (codeLanguage === 'javascript') {
-        code = javascriptGenerator.workspaceToCode(workspace)
-      } else if (codeLanguage === 'python') {
-        code = pythonGenerator.workspaceToCode(workspace)
-        code = '#!/usr/bin/env python3\n\n' + code
-      }
+      var code = workspaces.project.generateCode()
       window.api.writeFile(
         utils.getDirectory(filePath) +
           '/' +
           utils.getFileNameWithoutExtension(filePath) +
-          (codeLanguage === 'javascript' ? '.js' : codeLanguage === 'python' ? '.py' : ''),
+          workspaces.project.getInfo().language.extension,
         code
       )
       dispatchToast(
@@ -172,8 +115,14 @@ const App: React.FC = () => {
   }
 
   function clearTrash() {
-    Blockly.getMainWorkspace().trashcan.emptyContents()
+    const activeWorkspace = workspaces.getActiveWorkspace();
+    if (activeWorkspace) {
+      activeWorkspace.trashcan.emptyContents();
+    } else {
+      console.warn('当前没有激活的工作区');
+    }
   }
+
 
   function openAbout() {
     window.api.newWindow('../renderer/about.html', 600, 400)
@@ -184,13 +133,13 @@ const App: React.FC = () => {
     function chooseFile() {
       window.api.openFileDialog().then((path) => {
         if (path) {
-          document.getElementById(filePath).defaultValue = path
+          (document.getElementById(filePath) as HTMLInputElement).defaultValue = path
         }
       })
     }
     function addExtension() {
-      eval(window.api.readFile(document.getElementById(filePath).value))
-      workspace.updateToolbox(toolbox)
+      eval(window.api.readFile((document.getElementById(filePath) as HTMLInputElement).value))
+      workspaces.getActiveWorkspace().updateToolbox(toolbox)
       extensions.push(document.getElementById(filePath).value)
       dispatchToast(
         <Toast>
@@ -241,7 +190,7 @@ const App: React.FC = () => {
   const restoreFocusTargetAttribute = useRestoreFocusTarget()
 
   return (
-    <FluentProvider theme={webDarkTheme}>
+    <FluentProvider theme={webDarkTheme} style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Toaster
         toasterId={toasterId}
         position="top-end"
@@ -321,10 +270,8 @@ const App: React.FC = () => {
           </DialogBody>
         </DialogSurface>
       </Dialog>
-      <main>
-        <div id="blocklyArea"></div>
-        <div id="blocklyDiv"></div>
-      </main>
+      <div id="main">
+      </div>
     </FluentProvider>
   );
 };
