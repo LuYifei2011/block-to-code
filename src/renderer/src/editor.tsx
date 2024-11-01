@@ -44,12 +44,17 @@ const App: React.FC = () => {
   const params = new URLSearchParams(paramsStr)
   var filePath: string = params.get('file') || ''
 
-  var workspaces: Workspaces
+  var workspaces: Workspaces;
 
   React.useEffect(() => {
-    workspaces = new Workspaces(document.getElementById('main') as HTMLDivElement)
-    var project = JSON.parse(window.api.readFile(filePath))
-    workspaces.load(project)
+    const mainDiv = document.getElementById('main') as HTMLDivElement;
+    if (mainDiv) {
+        workspaces = new Workspaces(mainDiv);
+        var project = JSON.parse(window.api.readFile(filePath));
+        workspaces.load(project);
+    } else {
+        console.error("mainDiv is not defined");
+    }
   }, []);
 
   function undo() {

@@ -1,5 +1,4 @@
-import { i } from "vite/dist/node/types.d-aGj9QkWt";
-import { Project } from "./project";
+import Project from "./project";
 
 export class PythonProject extends Project {
     getInfo(): any {
@@ -10,7 +9,7 @@ export class PythonProject extends Project {
         };
     }
 
-    new(): any {
+    createNew(): any {
         // TODO: Create new project
         return {};
     }

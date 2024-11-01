@@ -1,6 +1,6 @@
 import * as Blockly from "blockly";
 
-import { Project } from "./project";
+import Project from "./project";
 import { PythonProject } from "./project-python";
 
 export class Workspaces {
@@ -9,7 +9,7 @@ export class Workspaces {
 
     constructor(mainDiv: HTMLDivElement) {
         this.mainDiv = mainDiv;
-        this.project = new Project(mainDiv);
+        this.project = new Project({ mainDiv });
     }
 
     load(data: any): void {
@@ -32,6 +32,6 @@ export class Workspaces {
     }
 
     getActiveWorkspace(): Blockly.WorkspaceSvg | undefined {
-        return undefined;
+        return this.project.getWorkspace();
     }
 }
