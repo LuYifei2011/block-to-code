@@ -275,7 +275,7 @@ const App: React.FC = () => {
           </DialogBody>
         </DialogSurface>
       </Dialog>
-      <div id="main">
+      <div id="main" style={{ flex: 1 }}>
       </div>
     </FluentProvider>
   );
