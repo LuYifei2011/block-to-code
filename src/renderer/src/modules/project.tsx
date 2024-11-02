@@ -1,5 +1,4 @@
-import React, { useRef, useState } from 'react';
-import { BlocklyWorkspace } from 'react-blockly';
+import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import { getToolbox } from '../toolbox'
 import DarkTheme from '@blockly/theme-dark'
@@ -11,14 +10,16 @@ import 'highlight.js/styles/atom-one-dark.css';
 import '../assets/img/block.svg';
 import BlockIcon from '../assets/img/block.svg';
 
-const Project: React.FC = () => {
+const Project: React.FC = forwardRef((props, ref) => {
     const blocklyRef = useRef(null);
     const [xml] = useState('');
 
     const [selectedValue, setSelectedValue] =
         React.useState<TabValue>("blocks");
+    const [activeWorkspace, setActiveWorkspace] = useState();
     const onTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
         setSelectedValue(data.value);
+        setActiveWorkspace(data.value === "blocks" ? workspace : undefined);
     }
 
     const { workspace } = useBlocklyWorkspace({
@@ -45,6 +46,44 @@ const Project: React.FC = () => {
             media: '/src/assets/blockly/media/',
         },
     });
+
+    const getInfo = () => {
+        return {
+            id: 'project-id',
+            name: 'Project Name',
+            version: '1.0.0'
+        };
+    };
+
+    const createNew = () => {
+        return {};
+    }
+
+    const load = (data: any) => {
+
+    }
+
+    const save = () => {
+
+    }
+
+    const generateCode = () => {
+        return javascriptGenerator.workspaceToCode(workspace);
+    }
+
+    const run = () => {
+
+    }
+
+    useImperativeHandle(ref, () => ({
+        activeWorkspace,
+        load,
+        save,
+        getInfo,
+        createNew,
+        generateCode,
+        run
+    }));
     
     return (
         <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -60,10 +99,10 @@ const Project: React.FC = () => {
                 <div style={{ display: selectedValue === "blocks" ? 'block' : 'none', height: '100%', width: '100%' }}>
                     <div ref={blocklyRef} style={{ height: '100%', width: '100%' }} />
                 </div>
-                {selectedValue === "code" && <Highlight language='javascript'>{javascriptGenerator.workspaceToCode(workspace)}</Highlight>}
+                {selectedValue === "code" && <Highlight language='javascript'>{generateCode()}</Highlight>}
             </div>
         </div>
     );
-};
+});
 
 export default Project;

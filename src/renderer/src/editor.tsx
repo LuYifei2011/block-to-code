@@ -102,12 +102,13 @@ const App: React.FC = () => {
 
   function buildCode() {
     if (filePath) {
-      var code = workspaces.project.generateCode()
+      var code = workspaces.generateCode()
       window.api.writeFile(
         utils.getDirectory(filePath) +
           '/' +
           utils.getFileNameWithoutExtension(filePath) +
-          workspaces.project.getInfo().language.extension,
+          '.' +
+          workspaces.getInfo().extensionName,
         code
       )
       dispatchToast(
