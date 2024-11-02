@@ -1,14 +1,10 @@
 import './assets/style/editor.css'
 import * as utils from './utils'
-
 import { Workspaces } from './modules/workspaces'
-
 import './react-i18next/i18n'
 import { t } from 'i18next'
-
 import React, { useTransition } from 'react'
 import ReactDOM from 'react-dom/client'
-
 import {
   useId,
   FluentProvider,
@@ -44,34 +40,34 @@ const App: React.FC = () => {
   const params = new URLSearchParams(paramsStr)
   var filePath: string = params.get('file') || ''
 
-  var workspaces: Workspaces;
+  var workspaces: Workspaces
 
   React.useEffect(() => {
-    const mainDiv = document.getElementById('main') as HTMLDivElement;
+    const mainDiv = document.getElementById('main') as HTMLDivElement
     if (mainDiv) {
-        workspaces = new Workspaces(mainDiv);
-        var project = JSON.parse(window.api.readFile(filePath));
-        workspaces.load(project);
+      workspaces = new Workspaces(mainDiv)
+      var project = JSON.parse(window.api.readFile(filePath))
+      workspaces.load(project)
     } else {
-        console.error("mainDiv is not defined");
+      console.error('mainDiv is not defined')
     }
-  }, []);
+  }, [])
 
   function undo() {
-    const activeWorkspace = workspaces.getActiveWorkspace();
+    const activeWorkspace = workspaces.getActiveWorkspace()
     if (activeWorkspace) {
-      activeWorkspace.undo(false);
+      activeWorkspace.undo(false)
     } else {
-      console.warn('当前没有激活的工作区');
+      console.warn('当前没有激活的工作区')
     }
   }
 
   function redo() {
-    const activeWorkspace = workspaces.getActiveWorkspace();
+    const activeWorkspace = workspaces.getActiveWorkspace()
     if (activeWorkspace) {
-      activeWorkspace.undo(true);
+      activeWorkspace.undo(true)
     } else {
-      console.warn('当前没有激活的工作区');
+      console.warn('当前没有激活的工作区')
     }
   }
 
@@ -121,14 +117,13 @@ const App: React.FC = () => {
   }
 
   function clearTrash() {
-    const activeWorkspace = workspaces.getActiveWorkspace();
+    const activeWorkspace = workspaces.getActiveWorkspace()
     if (activeWorkspace) {
-      activeWorkspace.trashcan.emptyContents();
+      activeWorkspace.trashcan.emptyContents()
     } else {
-      console.warn('当前没有激活的工作区');
+      console.warn('当前没有激活的工作区')
     }
   }
-
 
   function openAbout() {
     window.api.newWindow('../renderer/about.html', 600, 400)
@@ -139,7 +134,7 @@ const App: React.FC = () => {
     function chooseFile() {
       window.api.openFileDialog().then((path) => {
         if (path) {
-          (document.getElementById(filePath) as HTMLInputElement).defaultValue = path
+          ;(document.getElementById(filePath) as HTMLInputElement).defaultValue = path
         }
       })
     }
@@ -197,14 +192,8 @@ const App: React.FC = () => {
 
   return (
     <FluentProvider theme={webDarkTheme} style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Toaster
-        toasterId={toasterId}
-        position="top-end"
-        pauseOnHover
-        pauseOnWindowBlur
-        timeout={1000}
-      />
-      <div>
+      <Toaster toasterId={toasterId} position="top-end" pauseOnHover pauseOnWindowBlur timeout={1000} />
+      <div style={{ position: 'static' }}>
         <Menu>
           <MenuTrigger disableButtonEnhancement>
             <Button>{t('file')}</Button>
@@ -276,11 +265,10 @@ const App: React.FC = () => {
           </DialogBody>
         </DialogSurface>
       </Dialog>
-      <div id="main" style={{ flex: 1 }}>
-      </div>
+      <div id="main" style={{ flex: 1 }}></div>
     </FluentProvider>
-  );
-};
+  )
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />)
 

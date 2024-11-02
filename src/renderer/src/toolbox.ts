@@ -576,7 +576,7 @@ export function getToolbox() {
       },
       {
         kind: 'category',
-        name: 'Colour',
+        name: '%{BKY_CATCOLOUR}',
         contents: [
           {
             kind: 'block',

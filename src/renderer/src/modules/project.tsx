@@ -55,6 +55,7 @@ const Project: React.FC = forwardRef((props, ref) => {
     };
 
     const createNew = () => {
+        alert('createNew');
         return {};
     }
 
