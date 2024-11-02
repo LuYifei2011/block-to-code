@@ -94,6 +94,27 @@ app.whenReady().then(() => {
     event.returnValue = value || ''
   })
 
+  ipcMain.on('resizeWindow', (event, width: number, height: number) => {
+    const window = BrowserWindow.getFocusedWindow()
+    if (window) {
+      window.setSize(width, height)
+    }
+  })
+
+  ipcMain.on('maximizeWindow', () => {
+    const window = BrowserWindow.getFocusedWindow()
+    if (window) {
+      window.maximize()
+    }
+  })
+
+  ipcMain.on('restoreWindow', () => {
+    const window = BrowserWindow.getFocusedWindow()
+    if (window) {
+      window.restore()
+    }
+  })
+
   createWindow('../renderer/index.html', 900, 670)
 
   app.on('activate', function () {

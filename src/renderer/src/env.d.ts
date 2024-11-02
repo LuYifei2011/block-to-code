@@ -10,5 +10,8 @@ interface Window {
     writeFile: (filePath: string, data: string) => Promise<boolean>;
     setStore: (key: string, value: any) => void;
     getStore: (key: string) => any;
+    resizeWindow: (width: number, height: number) => void;
+    maximizeWindow: () => void;
+    restoreWindow: () => void;
   };
 }

@@ -282,3 +282,5 @@ const App: React.FC = () => {
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+
+window.api.maximizeWindow()

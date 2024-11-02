@@ -9,7 +9,10 @@ const api = {
   readFile: (filePath: string) => ipcRenderer.sendSync('readFile', filePath),
   writeFile: (filePath: string, data: string) => ipcRenderer.invoke('writeFile', filePath, data),
   setStore: (key: string, value: any) => ipcRenderer.send('setStore', key, value),
-  getStore: (key: string) => ipcRenderer.sendSync('getStore', key)
+  getStore: (key: string) => ipcRenderer.sendSync('getStore', key),
+  resizeWindow: (width: number, height: number) => ipcRenderer.send('resizeWindow', width, height),
+  maximizeWindow: () => ipcRenderer.send('maximizeWindow'),
+  restoreWindow: () => ipcRenderer.send('restoreWindow')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -18,7 +18,7 @@ import {
 import { OpenFolder24Regular } from '@fluentui/react-icons'
 
 const App: React.FC = () => {
-  const fileLanguage = useId('file-language')
+  const fileType = useId('file-language')
   const filePath = useId('file-path')
 
   function chooseFile(): void {
@@ -34,14 +34,13 @@ const App: React.FC = () => {
 
   function createFile(): void {
     const pathElement = document.getElementById(filePath) as HTMLInputElement
-    const languageElement = document.getElementById(fileLanguage) as HTMLSelectElement
-    if (pathElement && languageElement) {
+    const typeElement = document.getElementById(fileType) as HTMLSelectElement
+    if (pathElement && typeElement) {
       window.api.writeFile(
         pathElement.value,
         JSON.stringify({
-          workspace: {},
-          codeLanguage: languageElement.value,
-          extensions: []
+          data: {},
+          type: typeElement.value
         })
       )
       window.location.href = '/editor.html?file=' + pathElement.value
@@ -49,6 +48,7 @@ const App: React.FC = () => {
   }
 
   function cancel(): void {
+    window.api.restoreWindow()
     window.location.href = '/index.html'
   }
 
@@ -77,8 +77,8 @@ const App: React.FC = () => {
           />
           <br />
           <br />
-          <Label htmlFor={fileLanguage}>{t('fileLanguage')}</Label>
-          <Select id={fileLanguage}>
+          <Label htmlFor={fileType}>{t('fileLanguage')}</Label>
+          <Select id={fileType}>
             <option value="python">Python</option>
             <option value="javascript">JavaScript</option>
           </Select>
@@ -99,3 +99,6 @@ const App: React.FC = () => {
 }
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />)
+
+window.api.restoreWindow()
+// window.api.resizeWindow(900, 670)
