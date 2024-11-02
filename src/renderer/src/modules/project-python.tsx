@@ -4,10 +4,9 @@ import { getToolbox } from '../toolbox'
 import DarkTheme from '@blockly/theme-dark'
 import { SelectTabData, SelectTabEvent, Tab, TabList, TabValue } from '@fluentui/react-components';
 import { CodeRegular } from '@fluentui/react-icons'
-import Highlight from 'react-highlight'
+import { Highlight, themes } from "prism-react-renderer"
 import { pythonGenerator } from 'blockly/python';
 import * as Blockly from 'blockly/core'
-import 'highlight.js/styles/atom-one-dark.css';
 import '../assets/img/block.svg';
 import BlockIcon from '../assets/img/block.svg';
 
@@ -93,7 +92,7 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
     
     return (
         <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
-            <TabList selectedValue={selectedValue} onTabSelect={onTabSelect}>
+            <TabList selectedValue={selectedValue} onTabSelect={onTabSelect} style={{ marginBottom: '0px' }}>
                 <Tab id="Blocks" icon={<img src={BlockIcon} style={{ height: '16px', width: '16px' }} />} value="blocks">
                     Blocks
                 </Tab>
@@ -105,7 +104,26 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
                 <div style={{ display: selectedValue === "blocks" ? 'block' : 'none', height: '100%', width: '100%' }}>
                     <div ref={blocklyRef} style={{ height: '100%', width: '100%' }} />
                 </div>
-                {selectedValue === "code" && <Highlight language='javascript'>{generateCode()}</Highlight>}
+                {selectedValue === "code" && (
+                    <div style={{ height: '100%', width: '100%', overflow: 'auto' }}>
+                        <Highlight language='python' code={generateCode()} theme={themes.dracula}>
+                            {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                                <pre className={className} style={{ ...style, padding: '10px', backgroundColor: '#282a36', overflowX: 'auto' }}>
+                                    {tokens.map((line, i) => (
+                                        <div key={i} {...getLineProps({ line })} style={{ display: 'table-row' }}>
+                                            <span style={{ display: 'table-cell', textAlign: 'right', paddingRight: '1em', userSelect: 'none', opacity: 0.5 }}>{i + 1}</span>
+                                            <span style={{ display: 'table-cell' }}>
+                                                {line.map((token, key) => (
+                                                    <span key={key} {...getTokenProps({ token })} />
+                                                ))}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </pre>
+                            )}
+                        </Highlight>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -2,15 +2,10 @@ body {
     margin: 0;
 }
 
-#blocklyArea {
-    height: 100%;
-    width: 100%;
-}
-
 main {
     flex: 1;
 }
 
-#blocklyDiv {
-    position: absolute;
+pre {
+    margin: 0;
 }

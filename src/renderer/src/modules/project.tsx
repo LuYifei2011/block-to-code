@@ -4,9 +4,8 @@ import { getToolbox } from '../toolbox'
 import DarkTheme from '@blockly/theme-dark'
 import { SelectTabData, SelectTabEvent, Tab, TabList, TabValue } from '@fluentui/react-components';
 import { CodeRegular } from '@fluentui/react-icons'
-import Highlight from 'react-highlight'
+import { Highlight, themes } from "prism-react-renderer"
 import { javascriptGenerator } from 'blockly/javascript';
-import 'highlight.js/styles/atom-one-dark.css';
 import '../assets/img/block.svg';
 import BlockIcon from '../assets/img/block.svg';
 
@@ -99,7 +98,7 @@ const Project: React.FC = forwardRef((props, ref) => {
                 <div style={{ display: selectedValue === "blocks" ? 'block' : 'none', height: '100%', width: '100%' }}>
                     <div ref={blocklyRef} style={{ height: '100%', width: '100%' }} />
                 </div>
-                {selectedValue === "code" && <Highlight language='javascript'>{generateCode()}</Highlight>}
+                {selectedValue === "code" && <Highlight theme={themes.shadesOfPurple} language='javascript'>{generateCode()}</Highlight>}
             </div>
         </div>
     );
