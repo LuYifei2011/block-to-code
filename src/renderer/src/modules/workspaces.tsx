@@ -1,7 +1,6 @@
 import * as Blockly from "blockly";
-import Project from "./project";
-import PythonProject from "./project-python";
-import ReactDOM from 'react-dom/client'
+import ProjectLoader from "./project";
+import ReactDOM from 'react-dom/client';
 import React from 'react';
 
 export class Workspaces {
@@ -14,17 +13,10 @@ export class Workspaces {
     }
 
     load(data: any): void {
-        switch (data.type) {
-            case "python":
-                this.root.render(<PythonProject ref={this.projectRef} />);
-                setTimeout(() => {
-                    this.projectRef.current?.load(data.data);
-                }, 100);
-                break;
-            default:
-                console.error("Unsupported project type: " + data.type);
-                break;
-        }
+        this.root.render(<ProjectLoader id={data.type} ref={this.projectRef} />);
+        setTimeout(() => {
+            this.projectRef.current?.load(data.data);
+        }, 1000);
     }
 
     save(): any {

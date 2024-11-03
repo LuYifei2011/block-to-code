@@ -1,7 +1,7 @@
 import * as Blockly from "blockly";
 
 import Project from "./project";
-import { PythonProject } from "./project-python";
+import { Python } from "./projects/python";
 
 export class Workspaces {
     project: Project;
@@ -15,7 +15,7 @@ export class Workspaces {
     load(data: any): void {
         switch (data.type) {
             case "python":
-                this.project = new PythonProject(this.mainDiv);
+                this.project = new Python(this.mainDiv);
                 this.project.load(data.data);
                 break;
             default:

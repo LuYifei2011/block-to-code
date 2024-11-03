@@ -1,95 +1,37 @@
-import React, { useState, useEffect, ReactElement, useRef } from "react";
-import ReactDOM from 'react-dom/client';
-import { TabList, Tab } from "@fluentui/react-components";
-import type { SelectTabData, SelectTabEvent, TabValue } from "@fluentui/react-components";
+import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import { useBlocklyWorkspace } from 'react-blockly';
+import { getToolbox } from '../toolbox'
 import DarkTheme from '@blockly/theme-dark'
-import 'blockly/blocks'
-import * as Blockly from 'blockly/core'
-import { javascriptGenerator, Order } from 'blockly/javascript'
-import { pythonGenerator } from 'blockly/python'
-import * as Ch from 'blockly/msg/zh-hans'
-import { getToolbox } from '../toolbox.js';
+import { SelectTabData, SelectTabEvent, Tab, TabList, TabValue } from '@fluentui/react-components';
+import { CodeRegular } from '@fluentui/react-icons'
+import { Highlight, themes } from "prism-react-renderer"
+import { javascriptGenerator } from 'blockly/javascript';
+import '../assets/img/block.svg';
+import BlockIcon from '../assets/img/block.svg';
 
-class Project extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            tabs: [],
-            selectedValue: "conditions"
-        };
+const Project: React.FC = forwardRef((props, ref) => {
+    const blocklyRef = useRef(null);
+    const [xml] = useState('');
+
+    const [selectedValue, setSelectedValue] =
+        React.useState<TabValue>("blocks");
+    const [activeWorkspace, setActiveWorkspace] = useState();
+    const onTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
+        setSelectedValue(data.value);
+        setActiveWorkspace(data.value === "blocks" ? workspace : undefined);
     }
 
-    onTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
-        this.setState({ selectedValue: data.value });
-    };
-
-    componentDidMount() {
-        this.initializeTab();
-    }
-
-    initializeTab = () => {
-        this.setState({ tabs: [] });
-        this.renderTabs();
-    };
-
-    newTab = (value: string, content: string) => {
-        const newTabElement = <Tab key={value} value={value} content={content} />;
-        this.setState(prevState => ({ tabs: [...prevState.tabs, newTabElement] }), this.renderTabs);
-    };
-
-    renderTabs = () => {
-        const tabList = (
-            <TabList selectedValue={this.state.tabs[0] ? this.state.tabs[0].props.value : ""} onTabSelect={this.onTabSelect}>
-                {this.state.tabs}
-            </TabList>
-        );
-        const mainDiv = this.props.mainDiv;
-        if (mainDiv) {
-            ReactDOM.createRoot(mainDiv).render(tabList);
-        } else {
-            console.error("mainDiv is not defined");
-        }
-    };
-
-    getInfo = () => {
-        return {
-            id: 'project-id',
-            name: 'Project Name',
-            version: '1.0.0'
-        };
-    };
-
-    codePreview = () => {
-        // TODO: Implement code preview
-    };
-
-    initWorkspace = () => {
-        const mainDiv = this.props.mainDiv;
-        if (!mainDiv) {
-            console.error("mainDiv is not defined");
-            return;
-        }
-
-        const blocklyArea = document.createElement('div');
-        blocklyArea.id = 'blocklyArea';
-        blocklyArea.style.position = 'absolute';
-        blocklyArea.style.top = '0';
-        blocklyArea.style.bottom = '0';
-        blocklyArea.style.left = '0';
-        blocklyArea.style.right = '0';
-        mainDiv.appendChild(blocklyArea);
-
-        const blocklyDiv = document.createElement('div');
-        blocklyDiv.id = 'blocklyDiv';
-        blocklyDiv.style.position = 'absolute';
-        blocklyDiv.style.top = '0';
-        blocklyDiv.style.bottom = '0';
-        blocklyDiv.style.left = '0';
-        blocklyDiv.style.right = '0';
-        mainDiv.appendChild(blocklyDiv);
-
-        const workspace = Blockly.inject(blocklyDiv, {
-            toolbox: getToolbox(),
+    const { workspace } = useBlocklyWorkspace({
+        ref: blocklyRef,
+        toolboxConfiguration: getToolbox(), // this must be a JSON toolbox definition
+        initialXml: xml,
+        workspaceConfiguration: {
+            grid: {
+                spacing: 20,
+                length: 3,
+                colour: "#ccc",
+                snap: true,
+            },
             zoom: {
                 controls: true,
                 wheel: true,
@@ -99,70 +41,68 @@ class Project extends React.Component {
                 scaleSpeed: 1.2
             },
             trashcan: true,
-            theme: DarkTheme
-        });
+            theme: DarkTheme,
+            media: '/src/assets/blockly/media/',
+        },
+    });
 
-        const onresize = function () {
-            var element = blocklyArea;
-            var x = 0;
-            var y = 0;
-            do {
-                x += element.offsetLeft;
-                y += element.offsetTop;
-                element = element.offsetParent;
-            } while (element);
-            blocklyDiv.style.left = x + 'px';
-            blocklyDiv.style.top = y + 'px';
-            blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-            blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-            Blockly.svgResize(workspace);
+    const getInfo = () => {
+        return {
+            id: 'project-id',
+            name: 'Project Name',
+            version: '1.0.0'
         };
-        window.addEventListener('resize', onresize, false);
-        Blockly.setLocale(Ch);
-        onresize();
     };
 
-    initTab = () => {
-        //this.initializeTab();
-        //this.newTab("Blocks", "Blocks");
-        this.initWorkspace();
-        //this.codePreview();
-    };
-
-    load = (data: any) => {
-        this.initTab();
-    };
-
-    save = () => {
-        // TODO: Save project
+    const createNew = () => {
+        alert('createNew');
         return {};
-    };
-
-    createNew = () => {
-        // TODO: Create new project
-        return {};
-    };
-
-    generateCode = () => {
-        // TODO: Generate code for project
-        return "";
-    };
-
-    run = () => {
-        // TODO: Run project
-    };
-
-    getWorkspace(): Blockly.WorkspaceSvg | undefined {
-        return Blockly.getMainWorkspace();
     }
 
-    render() {
-        return (
-            <div>
-                {/* Your component JSX structure */}
+    const load = (data: any) => {
+
+    }
+
+    const save = () => {
+
+    }
+
+    const generateCode = () => {
+        return javascriptGenerator.workspaceToCode(workspace);
+    }
+
+    const run = () => {
+
+    }
+
+    useImperativeHandle(ref, () => ({
+        activeWorkspace,
+        load,
+        save,
+        getInfo,
+        createNew,
+        generateCode,
+        run
+    }));
+    
+    return (
+        <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <TabList selectedValue={selectedValue} onTabSelect={onTabSelect}>
+                <Tab id="Blocks" icon={<img src={BlockIcon} style={{ height: '16px', width: '16px' }} />} value="blocks">
+                    Blocks
+                </Tab>
+                <Tab id="Code" icon={<CodeRegular />} value="code">
+                    Code
+                </Tab>
+            </TabList>
+            <div style={{ flex: 1 }}>
+                <div style={{ display: selectedValue === "blocks" ? 'block' : 'none', height: '100%', width: '100%' }}>
+                    <div ref={blocklyRef} style={{ height: '100%', width: '100%' }} />
+                </div>
+                {selectedValue === "code" && <Highlight theme={themes.shadesOfPurple} language='javascript'>{generateCode()}</Highlight>}
             </div>
-        );
-    }
-}
+        </div>
+    );
+});
 
 export default Project;

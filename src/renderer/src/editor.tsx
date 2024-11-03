@@ -31,30 +31,8 @@ import {
   useRestoreFocusTarget
 } from '@fluentui/react-components'
 import { OpenFolder24Regular } from '@fluentui/react-icons'
-
-const initializeBlockly = () => {
-    Blockly.setLocale(Ch);
-    Blockly.Msg.CATLOGIC = "逻辑";
-    Blockly.Msg.CATLOOPS = "循环";
-    Blockly.Msg.CATMATH = "数学";
-    Blockly.Msg.CATTEXT = "文本";
-    Blockly.Msg.CATLISTS = "列表";
-    Blockly.Msg.CATCOLOUR = "颜色";
-    Blockly.Msg.CATVARIABLES = "变量";
-    Blockly.Msg.CATFUNCTIONS = "函数";
-
-    Blockly.dialog.setAlert((message, callback) => {
-        console.log('Alert: ' + message);
-    });
-
-    Blockly.dialog.setConfirm((message, callback) => {
-        console.log('Confirm: ' + message);
-    });
-
-    Blockly.dialog.setPrompt((message, defaultValue, callback) => {
-        console.log('Prompt: ' + message);
-    });
-};
+import * as Blockly from 'blockly/core'
+import * as Ch from 'blockly/msg/zh-hans'
 
 const App: React.FC = () => {
   const toasterId = useId('toaster')
@@ -66,7 +44,51 @@ const App: React.FC = () => {
 
   var workspaces: Workspaces
 
+  const [alertMessage, setAlertMessage] = React.useState<string | null>(null);
+  const [confirmMessage, setConfirmMessage] = React.useState<string | null>(null);
+  const [promptMessage, setPromptMessage] = React.useState<string | null>(null);
+  const [promptDefaultValue, setPromptDefaultValue] = React.useState<string>('');
+  const [promptCallback, setPromptCallback] = React.useState<(value: string | null) => void>(() => {});
+
+  const handleAlertClose = () => setAlertMessage(null);
+  const handleConfirmClose = (result: boolean) => {
+    setConfirmMessage(null);
+    confirmCallback(result);
+  };
+  const handlePromptClose = (result: string | null) => {
+    setPromptMessage(null);
+    promptCallback(result);
+  };
+
+  const initializeBlockly = () => {
+    Blockly.setLocale(Ch);
+    Blockly.Msg.CATLOGIC = "逻辑";
+    Blockly.Msg.CATLOOPS = "循环";
+    Blockly.Msg.CATMATH = "数学";
+    Blockly.Msg.CATTEXT = "文本";
+    Blockly.Msg.CATLISTS = "列表";
+    Blockly.Msg.CATCOLOUR = "颜色";
+    Blockly.Msg.CATVARIABLES = "变量";
+    Blockly.Msg.CATFUNCTIONS = "函数";
+
+    Blockly.dialog.setAlert((message, callback) => {
+      setAlertMessage(message);
+    });
+
+    Blockly.dialog.setConfirm((message, callback) => {
+      setConfirmMessage(message);
+      setConfirmCallback(() => callback);
+    });
+
+    Blockly.dialog.setPrompt((message, defaultValue, callback) => {
+      setPromptMessage(message);
+      setPromptDefaultValue(defaultValue);
+      setPromptCallback(() => callback);
+    });
+  };
+
   React.useEffect(() => {
+    initializeBlockly()
     const mainDiv = document.getElementById('main') as HTMLDivElement
     if (mainDiv) {
       workspaces = new Workspaces(mainDiv)
@@ -289,11 +311,62 @@ const App: React.FC = () => {
           </DialogBody>
         </DialogSurface>
       </Dialog>
+      <Dialog open={!!alertMessage} onOpenChange={handleAlertClose}>
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>{t('alert')}</DialogTitle>
+            <DialogContent>
+              <p>{alertMessage}</p>
+            </DialogContent>
+            <DialogActions>
+              <Button appearance="primary" onClick={handleAlertClose}>
+                {t('ok')}
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+      <Dialog open={!!confirmMessage} onOpenChange={() => handleConfirmClose(false)}>
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>{t('confirm')}</DialogTitle>
+            <DialogContent>
+              <p>{confirmMessage}</p>
+            </DialogContent>
+            <DialogActions>
+              <Button appearance="secondary" onClick={() => handleConfirmClose(false)}>
+                {t('cancel')}</Button>
+              <Button appearance="primary" onClick={() => handleConfirmClose(true)}>
+                {t('ok')}</Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+      <Dialog open={!!promptMessage} onOpenChange={() => handlePromptClose(null)}>
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>{t('prompt')}</DialogTitle>
+            <DialogContent>
+              <p>{promptMessage}</p>
+              <Input
+                defaultValue={promptDefaultValue}
+                onChange={(e) => setPromptDefaultValue(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button appearance="secondary" onClick={() => handlePromptClose(null)}>
+                {t('cancel')}</Button>
+              <Button appearance="primary" onClick={() => handlePromptClose(promptDefaultValue)}>
+                {t('ok')}</Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
       <div id="main" style={{ flex: 1 }}></div>
     </FluentProvider>
   )
 }
 
-initializeBlockly()
-ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+
 window.api.maximizeWindow()

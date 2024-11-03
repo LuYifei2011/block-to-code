@@ -1,16 +1,15 @@
 import React, { useRef, useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { useBlocklyWorkspace } from '../hooks/useBlocklyWorkspace'; // 修改导入路径
-import { getToolbox } from '../toolbox';
+import { useBlocklyWorkspace } from '../../hooks/useBlocklyWorkspace';
+import { getToolbox } from '../../toolbox';
 import { SelectTabData, SelectTabEvent, Tab, TabList, TabValue } from '@fluentui/react-components';
 import { CodeRegular } from '@fluentui/react-icons';
 import { Highlight, themes } from 'prism-react-renderer';
-import { pythonGenerator } from 'blockly/python';
+import { javascriptGenerator } from 'blockly/javascript';
 import * as Blockly from 'blockly/core';
-import '../assets/img/block.svg';
-import BlockIcon from '../assets/img/block.svg';
-import { log } from 'console';
+import '../../assets/img/block.svg';
+import BlockIcon from '../../assets/img/block.svg';
 
-const PythonProject: React.FC = forwardRef((props, ref) => {
+const Javascript: React.FC = forwardRef((props, ref) => {
     const blocklyRef = useRef(null);
     const [xml] = useState('');
 
@@ -24,7 +23,7 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
 
     const { workspace } = useBlocklyWorkspace({
         ref: blocklyRef,
-        toolboxConfiguration: getToolbox(), // this must be a JSON toolbox definition
+        toolboxConfiguration: getToolbox(),
         initialXml: xml,
         onWorkspaceChange: (workspace) => {
             setActiveWorkspace(workspace);
@@ -34,14 +33,14 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
 
     const getInfo = () => {
         return {
-            id: 'python',
-            name: 'Python',
+            id: 'javascript',
+            name: 'Javascript',
             version: '1.0.0',
-            extensionName: 'py',
+            extensionName: 'js',
         };
     };
 
-    const createNew = () => {
+    const createNew = (): any => {
         return {};
     };
 
@@ -54,7 +53,7 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
     };
 
     const generateCode = () => {
-        return '#!/usr/bin/env python3\n' + pythonGenerator.workspaceToCode(workspace);
+        return javascriptGenerator.workspaceToCode(workspace);
     };
 
     const run = () => {};
@@ -69,10 +68,6 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
         run,
     }));
    
-    useEffect(()=>{
-
-    },[])
-
     return (
         <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
             <TabList selectedValue={selectedValue} onTabSelect={onTabSelect} style={{ marginBottom: '0px' }}>
@@ -89,7 +84,7 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
                 </div>
                 {selectedValue === 'code' && (
                     <div style={{ height: '100%', width: '100%', overflow: 'auto' }}>
-                        <Highlight language="python" code={generateCode()} theme={themes.dracula}>
+                        <Highlight language="js" code={generateCode()} theme={themes.dracula}>
                             {({ className, style, tokens, getLineProps, getTokenProps }) => (
                                 <pre className={className} style={{ ...style, padding: '10px', backgroundColor: '#282a36', overflowX: 'auto' }}>
                                     {tokens.map((line, i) => (
@@ -114,4 +109,4 @@ const PythonProject: React.FC = forwardRef((props, ref) => {
     );
 });
 
-export default PythonProject;
+export default Javascript;

@@ -18,13 +18,13 @@ import {
 import { OpenFolder24Regular } from '@fluentui/react-icons'
 
 const App: React.FC = () => {
-  const fileType = useId('file-language')
-  const filePath = useId('file-path')
+  const fileLanguageId = useId('file-language')
+  const filePathId = useId('file-path')
 
-  function chooseFile(): void {
+  function handleChooseFile(): void {
     window.api.saveFileDialog().then((path: string) => {
       if (path) {
-        const element = document.getElementById(filePath) as HTMLInputElement
+        const element = document.getElementById(filePathId) as HTMLInputElement
         if (element) {
           element.value = path
         }
@@ -32,9 +32,9 @@ const App: React.FC = () => {
     })
   }
 
-  function createFile(): void {
-    const pathElement = document.getElementById(filePath) as HTMLInputElement
-    const typeElement = document.getElementById(fileType) as HTMLSelectElement
+  function handleCreateFile(): void {
+    const pathElement = document.getElementById(filePathId) as HTMLInputElement
+    const typeElement = document.getElementById(fileLanguageId) as HTMLSelectElement
     if (pathElement && typeElement) {
       window.api.writeFile(
         pathElement.value,
@@ -47,7 +47,7 @@ const App: React.FC = () => {
     }
   }
 
-  function cancel(): void {
+  function handleCancel(): void {
     window.api.restoreWindow()
     window.location.href = '/index.html'
   }
@@ -58,17 +58,17 @@ const App: React.FC = () => {
       style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}
     >
       <div style={{ margin: '50px' }}>
-        <Title1>{t('newFile')}</Title1>
+        <Title1>{t('new_file')}</Title1>
         <br />
         <div style={{ margin: '20px' }}>
-          <Label htmlFor={filePath}>{t('filePath')}</Label>
+          <Label htmlFor={filePathId}>{t('file_path')}</Label>
           <br />
           <Input
-            id={filePath}
+            id={filePathId}
             style={{ width: '100%' }}
             contentAfter={
               <Button
-                onClick={chooseFile}
+                onClick={handleChooseFile}
                 appearance="transparent"
                 size="small"
                 icon={<OpenFolder24Regular />}
@@ -77,20 +77,20 @@ const App: React.FC = () => {
           />
           <br />
           <br />
-          <Label htmlFor={fileType}>{t('fileLanguage')}</Label>
-          <Select id={fileType}>
+          <Label htmlFor={fileLanguageId}>{t('file_language')}</Label>
+          <Select id={fileLanguageId}>
             <option value="python">Python</option>
             <option value="javascript">JavaScript</option>
           </Select>
         </div>
         <div>
           <div style={{ bottom: 0, right: 0, position: 'absolute', margin: '50px' }}>
-            <Button appearance="primary" onClick={createFile}>
+            <Button appearance="primary" onClick={handleCreateFile}>
               {t('create')}
             </Button>
           </div>
           <div style={{ bottom: 0, left: 0, position: 'absolute', margin: '50px' }}>
-            <Button onClick={cancel}>{t('cancel')}</Button>
+            <Button onClick={handleCancel}>{t('cancel')}</Button>
           </div>
         </div>
       </div>

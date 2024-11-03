@@ -27,14 +27,14 @@ const App: React.FC = () => {
           </div>
           <div style={{ gridRow: '1' }}>
             <div className="btn-group">
-              <Button onClick={newFile}>
+              <Button onClick={handleNewFile}>
                 <img src={imgNewFile} height="30px" width="30px" alt="New File" />
-                {t('newFile')}
+                {t('new_file')}
               </Button>
               <br />
-              <Button onClick={openFile}>
+              <Button onClick={handleOpenFile}>
                 <img src={imgOpenFile} height="30px" width="30px" alt="Open File" />
-                {t('openFile')}
+                {t('open_file')}
               </Button>
             </div>
           </div>
@@ -47,11 +47,11 @@ const App: React.FC = () => {
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />)
 
-function newFile(): void {
+function handleNewFile(): void {
   window.location.href = 'new.html'
 }
 
-function openFile(): void {
+function handleOpenFile(): void {
   window.api.openFileDialog().then((path: string) => {
     if (path) {
       window.location.href = 'editor.html?file=' + encodeURIComponent(path)
