@@ -32,6 +32,30 @@ import {
 } from '@fluentui/react-components'
 import { OpenFolder24Regular } from '@fluentui/react-icons'
 
+const initializeBlockly = () => {
+    Blockly.setLocale(Ch);
+    Blockly.Msg.CATLOGIC = "逻辑";
+    Blockly.Msg.CATLOOPS = "循环";
+    Blockly.Msg.CATMATH = "数学";
+    Blockly.Msg.CATTEXT = "文本";
+    Blockly.Msg.CATLISTS = "列表";
+    Blockly.Msg.CATCOLOUR = "颜色";
+    Blockly.Msg.CATVARIABLES = "变量";
+    Blockly.Msg.CATFUNCTIONS = "函数";
+
+    Blockly.dialog.setAlert((message, callback) => {
+        console.log('Alert: ' + message);
+    });
+
+    Blockly.dialog.setConfirm((message, callback) => {
+        console.log('Confirm: ' + message);
+    });
+
+    Blockly.dialog.setPrompt((message, defaultValue, callback) => {
+        console.log('Prompt: ' + message);
+    });
+};
+
 const App: React.FC = () => {
   const toasterId = useId('toaster')
   const { dispatchToast } = useToastController(toasterId)
@@ -43,6 +67,7 @@ const App: React.FC = () => {
   var workspaces: Workspaces
 
   React.useEffect(() => {
+    initializeBlockly()
     const mainDiv = document.getElementById('main') as HTMLDivElement
     if (mainDiv) {
       workspaces = new Workspaces(mainDiv)
