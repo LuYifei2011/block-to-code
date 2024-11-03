@@ -37,28 +37,6 @@ export const useBlocklyWorkspace = (config) => {
     });
 
     useEffect(() => {
-        Blockly.setLocale(Ch);
-        Blockly.Msg.CATLOGIC = "逻辑";
-        Blockly.Msg.CATLOOPS = "循环";
-        Blockly.Msg.CATMATH = "数学";
-        Blockly.Msg.CATTEXT = "文本";
-        Blockly.Msg.CATLISTS = "列表";
-        Blockly.Msg.CATCOLOUR = "颜色";
-        Blockly.Msg.CATVARIABLES = "变量";
-        Blockly.Msg.CATFUNCTIONS = "函数";
-
-        Blockly.dialog.setAlert(function (message, callback) {
-            console.log('Alert: ' + message);
-        });
-
-        Blockly.dialog.setConfirm(function (message, callback) {
-            console.log('Confirm: ' + message);
-        });
-
-        Blockly.dialog.setPrompt(function (message, defaultValue, callback) {
-            console.log('Prompt: ' + message);
-        });
-
         setWorkspace(originalWorkspace);
     }, [originalWorkspace]);
 
