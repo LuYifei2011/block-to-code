@@ -67,7 +67,6 @@ const App: React.FC = () => {
   var workspaces: Workspaces
 
   React.useEffect(() => {
-    initializeBlockly()
     const mainDiv = document.getElementById('main') as HTMLDivElement
     if (mainDiv) {
       workspaces = new Workspaces(mainDiv)
@@ -295,6 +294,6 @@ const App: React.FC = () => {
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />)
-
+initializeBlockly()
+ReactDOM.createRoot(document.getElementById('root')).render(<App />)
 window.api.maximizeWindow()
