@@ -38,6 +38,7 @@ export const useBlocklyWorkspace = (config) => {
 
     useEffect(() => {
         setWorkspace(originalWorkspace);
+        Blockly.setLocale(Ch);
     }, [originalWorkspace]);
 
     return { workspace };

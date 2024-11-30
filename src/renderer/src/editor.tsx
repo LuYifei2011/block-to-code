@@ -61,7 +61,6 @@ const App: React.FC = () => {
   };
 
   const initializeBlockly = () => {
-    Blockly.setLocale(Ch);
     Blockly.Msg.CATLOGIC = "逻辑";
     Blockly.Msg.CATLOOPS = "循环";
     Blockly.Msg.CATMATH = "数学";
@@ -180,14 +179,14 @@ const App: React.FC = () => {
     function chooseFile() {
       window.api.openFileDialog().then((path) => {
         if (path) {
-          ;(document.getElementById(filePath) as HTMLInputElement).defaultValue = path
+          (document.getElementById(filePath) as HTMLInputElement).defaultValue = path
         }
       })
     }
     function addExtension() {
-      eval(window.api.readFile((document.getElementById(filePath) as HTMLInputElement).value))
-      workspaces.getActiveWorkspace().updateToolbox(toolbox)
-      extensions.push(document.getElementById(filePath).value)
+      // eval(window.api.readFile((document.getElementById(filePath) as HTMLInputElement).value))
+      // workspaces.getActiveWorkspace().updateToolbox(toolbox)
+      // extensions.push(document.getElementById(filePath).value)
       dispatchToast(
         <Toast>
           <ToastTitle>{t('add_success')}</ToastTitle>
